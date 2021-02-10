@@ -121,7 +121,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
         return { ...prevState, fileManager, files, actions }
       })
     })()
-  }, [])
+  }, [name])
 
   useEffect(() => {
     if (state.fileManager) {
@@ -260,20 +260,20 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return new Promise((resolve) => {
       filesProvider.resolveDirectory(folderPath, (error, fileTree) => {
         if (error) console.error(error)
-        const files = normalize(folderPath, fileTree)
+        const files = normalize(fileTree)
 
         resolve(files)
       })
     })
   }
 
-  const normalize = (path, filesList): File[] => {
+  const normalize = (filesList): File[] => {
     const folders = []
     const files = []
-    const prefix = path.split('/')[0]
 
     Object.keys(filesList || {}).forEach(key => {
-      const path = prefix + '/' + key
+      let path = filesProvider.type + '/' + key
+      path = path.replace(/^\/|\/$/g, '') // remove first and last slash
 
       if (filesList[key].isDirectory) {
         folders.push({

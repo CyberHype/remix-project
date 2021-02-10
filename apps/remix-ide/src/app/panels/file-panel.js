@@ -93,6 +93,8 @@ module.exports = class Filepanel extends ViewPlugin {
       this.remixdExplorer.hide()
     })
 
+    this.currentWorkspace = null
+
     this.renderComponent()
   }
 
@@ -125,6 +127,11 @@ module.exports = class Filepanel extends ViewPlugin {
     return this.el
   }
 
+  setWorkspace (name) {
+    this.currentWorkspace = name.replace('browser/', '')
+    this.renderComponent()
+  }
+
   /**
    *
    * @param item { id: string, name: string, type?: string[], path?: string[], extension?: string[], pattern?: string[] }
@@ -145,18 +152,18 @@ module.exports = class Filepanel extends ViewPlugin {
         <div className='remixui_fileexplorer' onClick={() => this.resetFocus(true)}>
           <div className='remixui_fileExplorerTree'>
             <div>
-              <div className='pl-2 remixui_treeview' data-id='filePanelFileExplorerTree'>
-                <FileExplorer
-                  name='browser'
-                  registry={this._components.registry}
-                  filesProvider={this._deps.fileProviders.browser}
-                  menuItems={['createNewFile', 'createNewFolder', 'publishToGist', canUpload ? 'uploadFile' : '']}
-                  plugin={this}
-                  focusRoot={this.reset}
-                  contextMenuItems={this.registeredMenuItems}
-                  displayInput={this.displayNewFile}
-                  externalUploads={this.uploadFileEvent}
-                />
+              <div className='pl-2 remixui_treeview'>
+                { this.currentWorkspace &&
+                  <FileExplorer
+                    name={this.currentWorkspace}
+                    registry={this._components.registry}
+                    filesProvider={this._deps.fileProviders.workspace}
+                    menuItems={['createNewFile', 'createNewFolder', 'publishToGist', canUpload ? 'uploadFile' : '']}
+                    plugin={this}
+                    focusRoot={this.reset}
+                    contextMenuItems={this.registeredMenuItems}
+                  />
+                }
               </div>
               <div className='pl-2 filesystemexplorer remixui_treeview'>
                 { !this.hideRemixdExplorer &&
@@ -170,6 +177,19 @@ module.exports = class Filepanel extends ViewPlugin {
                     contextMenuItems={this.registeredMenuItems}
                   />
                 }
+              </div>
+              <div className='pl-2 remixui_treeview' data-id='filePanelFileExplorerTree'>
+                <FileExplorer
+                  name='browser'
+                  registry={this._components.registry}
+                  filesProvider={this._deps.fileProviders.browser}
+                  menuItems={['createNewFile', 'createNewFolder', 'publishToGist', canUpload ? 'uploadFile' : '']}
+                  plugin={this}
+                  focusRoot={this.reset}
+                  contextMenuItems={this.registeredMenuItems}
+                  displayInput={this.displayNewFile}
+                  externalUploads={this.uploadFileEvent}
+                />
               </div>
             </div>
           </div>
